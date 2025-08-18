@@ -3,8 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <head name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ฐานข้อมูลพรรณไม้</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#667eea" ) <title>ฐานข้อมูลพรรณไม้</title>
     <style>
         * {
             margin: 0;
@@ -578,52 +580,148 @@
             transform: translateY(-2px);
         }
 
-        /* Responsive Design */
+        /* Mobile Responsive Design */
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
             }
 
+            .header {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+
             .header h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
+                margin-bottom: 15px;
             }
 
             .nav-buttons {
-                gap: 10px;
+                gap: 8px;
+                flex-direction: column;
             }
 
             .nav-btn {
-                padding: 10px 16px;
-                font-size: 14px;
+                padding: 12px 20px;
+                font-size: 16px;
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+
+            .filters-section {
+                padding: 15px;
+                margin-bottom: 15px;
             }
 
             .filters-grid {
                 grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .filter-group select,
+            .filter-group input {
+                padding: 12px;
+                font-size: 16px;
+                /* Prevent zoom on iOS */
+                border-radius: 8px;
+            }
+
+            .filter-actions {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .clear-btn {
+                padding: 12px 24px;
+                font-size: 16px;
+                width: 100%;
+                max-width: 200px;
             }
 
             .plants-grid {
                 grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .plant-card {
+                padding: 15px;
+            }
+
+            .plant-card h3 {
+                font-size: 1.1rem;
+            }
+
+            .plant-card .info-grid {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .plant-card .info-item {
+                flex-direction: column;
+                gap: 2px;
             }
 
             .modal-content {
                 width: 95%;
                 margin: 5% auto;
+                max-height: 85vh;
+            }
+
+            .modal-header {
+                padding: 15px;
+            }
+
+            .modal-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .modal-body {
+                padding: 15px;
             }
 
             .detail-grid {
                 grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .detail-item {
+                padding: 12px;
             }
 
             .image-gallery {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .image-item img,
+            .image-placeholder {
+                height: 100px;
+            }
+
+            .quiz-setup {
+                padding: 20px;
+            }
+
+            .quiz-setup h2 {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
             }
 
             .category-buttons {
                 grid-template-columns: 1fr;
+                gap: 12px;
             }
 
-            .options-grid {
-                grid-template-columns: 1fr;
+            .category-btn {
+                padding: 16px;
+                font-size: 16px;
+                min-height: 60px;
+            }
+
+            .quiz-container {
+                padding: 20px;
             }
 
             .quiz-header {
@@ -634,11 +732,155 @@
             .progress-bar {
                 margin: 0;
                 order: -1;
+                height: 8px;
+            }
+
+            .timer {
+                font-size: 1.2rem;
+                padding: 12px 20px;
+                align-self: center;
+            }
+
+            .question-image img {
+                max-height: 250px;
+                border-radius: 12px;
+            }
+
+            .question-text {
+                font-size: 1.1rem;
+                margin-bottom: 15px;
+                padding: 0 10px;
+            }
+
+            .options-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .option-btn {
+                padding: 16px;
+                font-size: 16px;
+                text-align: center;
+                min-height: 60px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .quiz-results {
+                padding: 20px;
+            }
+
+            .results-header h2 {
+                font-size: 1.6rem;
+            }
+
+            .score {
+                font-size: 1.3rem;
             }
 
             .result-card {
                 flex-direction: column;
                 text-align: center;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .result-image img {
+                width: 100px;
+                height: 100px;
+            }
+
+            .result-question {
+                font-size: 1rem;
+            }
+
+            .play-again-btn {
+                padding: 16px 32px;
+                font-size: 16px;
+                margin-top: 15px;
+            }
+        }
+
+        /* Small Mobile Devices */
+        @media (max-width: 480px) {
+            .container {
+                padding: 8px;
+            }
+
+            .header {
+                padding: 12px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .filters-section {
+                padding: 12px;
+            }
+
+            .plant-card {
+                padding: 12px;
+            }
+
+            .modal-header {
+                padding: 12px;
+            }
+
+            .modal-body {
+                padding: 12px;
+            }
+
+            .quiz-setup,
+            .quiz-container,
+            .quiz-results {
+                padding: 15px;
+            }
+
+            .question-image img {
+                max-height: 200px;
+            }
+
+            .option-btn {
+                padding: 14px;
+                min-height: 55px;
+            }
+
+            .category-btn {
+                padding: 14px;
+                min-height: 55px;
+            }
+        }
+
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+
+            .plant-card,
+            .option-btn,
+            .category-btn,
+            .nav-btn,
+            .clear-btn {
+                transform: none;
+                transition: background-color 0.2s ease;
+            }
+
+            .plant-card:active,
+            .option-btn:active,
+            .category-btn:active,
+            .nav-btn:active,
+            .clear-btn:active {
+                opacity: 0.8;
+                transform: scale(0.98);
+            }
+        }
+
+        /* Prevent zoom on input focus for iOS */
+        @media screen and (-webkit-min-device-pixel-ratio: 0) {
+
+            select,
+            input[type="text"] {
+                font-size: 16px;
             }
         }
 
