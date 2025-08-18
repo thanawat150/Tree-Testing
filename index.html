@@ -968,7 +968,10 @@
             <div id="quiz-setup" class="quiz-setup">
                 <h2>เลือกหมวดคำถาม</h2>
                 <div class="category-buttons">
-                    <button class="category-btn" onclick="startQuiz('plant-name')">ทายชื่อพรรณไม้</button>
+                    <button class="category-btn" onclick="startQuiz('plant-name')">ทายชื่อพรรณไม้จากผล</button>
+                    <button class="category-btn" onclick="startQuiz('plant-name1')">ทายชื่อพรรณไม้จากใบ</button>
+                    <button class="category-btn" onclick="startQuiz('plant-name2')">ทายชื่อพรรณไม้จากลำต้น</button>
+                    <button class="category-btn" onclick="startQuiz('plant-name3')">ทายชื่อพรรณไม้จากดอก</button>
                     <button class="category-btn" onclick="startQuiz('habitat')">ทายจากวิสัย</button>
                     <button class="category-btn" onclick="startQuiz('leaf-type')">ทายจากชนิดใบ</button>
                     <button class="category-btn" onclick="startQuiz('leaf-arrangement')">ทายจากการเรียงตัวของใบ</button>
@@ -1412,7 +1415,10 @@
 
         function createQuestion(correctPlant, category, allData) {
             const categoryMap = {
-                'plant-name': { field: 'พันธุ์', text: 'ต้นไม้นี้ชื่ออะไร?', images: ['ภาพผล', 'ภาพใบ','ภาพลำต้น', 'ภาพดอก'] },
+                'plant-name': { field: 'พันธุ์', text: 'ต้นไม้นี้ชื่ออะไร?', images: ['ภาพผล'] },
+                'plant-name1': { field: 'พันธุ์', text: 'ต้นไม้นี้ชื่ออะไร?', images: ['ภาพใบ'] },
+                'plant-name2': { field: 'พันธุ์', text: 'ต้นไม้นี้ชื่ออะไร?', images: ['ภาพลำต้น'] },
+                'plant-name3': { field: 'พันธุ์', text: 'ต้นไม้นี้ชื่ออะไร?', images: ['ภาพดอก'] },
                 'habitat': { field: 'วิสัย', text: 'วิสัยของพรรณไม้นี้คือ?', images: ['ภาพลำต้น', 'ภาพใบ'] },
                 'leaf-type': { field: 'ชนิดใบ', text: 'ชนิดใบของพรรณไม้นี้คือ?', images: ['ภาพใบ'] },
                 'leaf-arrangement': { field: 'การเรียงตัวของใบ', text: 'การเรียงตัวของใบของพรรณไม้นี้คือ?', images: ['ภาพใบ'] },
