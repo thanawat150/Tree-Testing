@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <head name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ฐานข้อมูลพรรณไม้</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #4a5568;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header & Navigation */
+        .header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            text-align: center;
+            color: #2d3748;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        /* Learning Mode */
+        .filters-section {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2d3748;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .filter-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #744210;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .results-count {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        /* Plant Cards */
+        .plants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .plant-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .plant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .plant-card h3 {
+            color: #2d3748;
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+        }
+
+        .plant-card .scientific-name {
+            color: #718096;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .plant-card .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .plant-card .info-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .plant-card .info-label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .plant-card .info-value {
+            color: #718096;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            opacity: 0.7;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #4a5568;
+        }
+
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .image-item {
+            text-align: center;
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-item img:hover {
+            transform: scale(1.05);
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 120px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .image-label {
+            margin-top: 5px;
+            font-size: 0.9rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        /* Quiz Mode */
+        .quiz-setup {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .quiz-setup h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .category-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .category-btn {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #2d3748;
+            border: none;
+            padding: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+            flex: 1;
+            margin: 0 20px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .timer {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #744210;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .question-image {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .question-image img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .option-btn.correct {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-color: #28a745;
+        }
+
+        .option-btn.incorrect {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border-color: #dc3545;
+        }
+
+        .option-btn.selected {
+            background: linear-gradient(135deg, #cce7ff 0%, #b3d9ff 100%);
+            border-color: #007bff;
+        }
+
+        /* Quiz Results */
+        .quiz-results {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .results-header h2 {
+            color: #2d3748;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .score {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .results-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-card.correct {
+            border-left: 5px solid #28a745;
+        }
+
+        .result-card.incorrect {
+            border-left: 5px solid #dc3545;
+        }
+
+        .result-image {
+            flex-shrink: 0;
+        }
+
+        .result-image img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .result-info {
+            flex: 1;
+        }
+
+        .result-question {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .result-answers {
+            font-size: 0.9rem;
+        }
+
+        .result-answers .your-answer {
+            color: #718096;
+            margin-bottom: 5px;
+        }
+
+        .result-answers .correct-answer {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .result-status {
+            flex-shrink: 0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .result-status.correct {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .result-status.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .play-again-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            transition: all 0.3s ease;
+        }
+
+        .play-again-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .nav-buttons {
+                gap: 10px;
+            }
+
+            .nav-btn {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .plants-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .image-gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .category-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quiz-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .progress-bar {
+                margin: 0;
+                order: -1;
+            }
+
+            .result-card {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🌿 ฐานข้อมูลพรรณไม้</h1>
+            <div class="nav-buttons">
+                <button class="nav-btn active" onclick="showMode('learning')">โหมดเรียนรู้</button>
+                <button class="nav-btn" onclick="showMode('quiz')">โหมดทาย</button>
+            </div>
+        </div>
+
+        <!-- Learning Mode -->
+        <div id="learning-mode">
+            <!-- Filters -->
+            <div class="filters-section">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label>ค้นหาพันธุ์:</label>
+                        <input type="text" id="search-name" placeholder="พิมพ์ชื่อพันธุ์หรือชื่อวิทยาศาสตร์">
+                    </div>
+                    <div class="filter-group">
+                        <label>วิสัย:</label>
+                        <select id="filter-habitat">
+                            <option value="">ทั้งหมด</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>ชนิดใบ:</label>
+                        <select id="filter-leaf-type">
+                            <option value="">ทั้งหมด</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>การเรียงตัวของใบ:</label>
+                        <select id="filter-leaf-arrangement">
+                            <option value="">ทั้งหมด</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>พันธุ์ไม้:</label>
+                        <select id="filter-plant-type">
+                            <option value="">ทั้งหมด</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>สถานะ:</label>
+                        <select id="filter-status">
+                            <option value="">ทั้งหมด</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <span class="results-count" id="results-count">ผลลัพธ์: 0 รายการ</span>
+                    <button class="clear-btn" onclick="clearFilters()">ล้างตัวกรอง</button>
+                </div>
+            </div>
+
+            <!-- Plant Cards -->
+            <div class="plants-grid" id="plants-grid">
+                <!-- Plant cards will be rendered here -->
+            </div>
+        </div>
+
+        <!-- Quiz Mode -->
+        <div id="quiz-mode" class="hidden">
+            <!-- Quiz Setup -->
+            <div id="quiz-setup" class="quiz-setup">
+                <h2>เลือกหมวดคำถาม</h2>
+                <div class="category-buttons">
+                    <button class="category-btn" onclick="startQuiz('plant-name')">ทายชื่อพรรณไม้</button>
+                    <button class="category-btn" onclick="startQuiz('habitat')">ทายจากวิสัย</button>
+                    <button class="category-btn" onclick="startQuiz('leaf-type')">ทายจากชนิดใบ</button>
+                    <button class="category-btn" onclick="startQuiz('leaf-arrangement')">ทายจากการเรียงตัวของใบ</button>
+                    <button class="category-btn" onclick="startQuiz('plant-type')">ทายจากพันธุ์ไม้</button>
+                </div>
+            </div>
+
+            <!-- Quiz Container -->
+            <div id="quiz-container" class="quiz-container hidden">
+                <div class="quiz-header">
+                    <span id="question-counter">คำถามที่ 1/15</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="timer" id="timer">10</div>
+                </div>
+
+                <div class="question-image" id="question-image">
+                    <!-- Question image will be shown here -->
+                </div>
+
+                <div class="question-text" id="question-text">
+                    <!-- Question text will be shown here -->
+                </div>
+
+                <div class="options-grid" id="options-grid">
+                    <!-- Answer options will be shown here -->
+                </div>
+            </div>
+
+            <!-- Quiz Results -->
+            <div id="quiz-results" class="quiz-results hidden">
+                <div class="results-header">
+                    <h2>ผลการทาย</h2>
+                    <div class="score" id="final-score">คะแนน: 0/15</div>
+                </div>
+                <div class="results-grid" id="results-grid">
+                    <!-- Result cards will be shown here -->
+                </div>
+                <button class="play-again-btn" onclick="resetQuiz()">เล่นใหม่</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plant Detail Modal -->
+    <div id="plant-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">รายละเอียดพรรณไม้</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Plant details will be shown here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="image-modal" class="modal">
+        <div class="modal-content" style="max-width: 90vw; max-height: 90vh; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 id="image-modal-title">ภาพขยาย</h3>
+                <span class="close" onclick="closeImageModal()">&times;</span>
+            </div>
+            <div style="text-align: center;">
+                <img id="image-modal-img"
+                    style="max-width: 100%; max-height: 70vh; object-fit: contain; border-radius: 10px;">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const QUIZ_CONFIG = {
+            maxQuestions: 15,
+            timePerQuestion: 10, // seconds
+            waitTimeAfterAnswer: 3 // seconds
+        };
+
+        // Sample Data
+        const DATA = [
+            { "พันธุ์": "กระเพาะปลา", "ชื่อวิทยาศาสตร์": "Finlaysonia obovata Wall.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้เลื้อย", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้าม", "ราก": "", "สถานะ": "ยังไม่ได้รับการประเมิน", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1_iaE8fApzIBRLAd-AwAtbiaSWgR9Bovi", "ภาพใบ": "https://lh3.googleusercontent.com/d/1hFbn4NB92ul9mQ76ZZg3ci2gW6idqMDM", "ภาพดอก": "https://lh3.googleusercontent.com/d/1CtPZpSaVsJJHovOinhvzX-152NFx2cje", "ภาพผล": "https://lh3.googleusercontent.com/d/11Jyz7fqwVRkQAbM_EaFXW4XmeQ3Cyzy1" },
+            { "พันธุ์": "โกงกางใบเล็ก", "ชื่อวิทยาศาสตร์": "Rhizophora apiculata Blume", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "รากค้ำยัน", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1L0xsG1SuysVtj3AgqtPgfXD83VszsAg3", "ภาพใบ": "https://lh3.googleusercontent.com/d/1djOyQsekaT2vp2bZMqlaXxVB_GXdCH2K", "ภาพดอก": "https://lh3.googleusercontent.com/d/1acHyr9VEV601QcjILv72Ntf1s5zVru_r", "ภาพผล": "https://lh3.googleusercontent.com/d/1k-NFy5TSkl-zk9nog1m9wkqw5akQJOpZ" },
+            { "พันธุ์": "โกงกางใบใหญ่", "ชื่อวิทยาศาสตร์": "Rhizophora mucronata Lam.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "รากค้ำยัน", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1FvOvSIA2w2TyfxWYzvOlpC1qRvXJ2xtU", "ภาพใบ": "https://lh3.googleusercontent.com/d/1urBBgBcc8wG4ktwfnDnKBCAnv0scNO_I", "ภาพดอก": "https://lh3.googleusercontent.com/d/1tufpm6XR80G7Ru0HCK-oni2QOdT00sEo", "ภาพผล": "https://lh3.googleusercontent.com/d/1lwP2JCKhwAon5Hz2LF7_L8ZSuhilY3O8" },
+            { "พันธุ์": "แดงน้ำ", "ชื่อวิทยาศาสตร์": "Aglaia cucullata (Roxb.) Pellegr.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบประกอบ", "ชนิดใบ": "ใบประกอบขนนกปลายคี่", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "รากอากาศคล้ายเข่า", "สถานะ": "ข้อมูลไม่เพียงพอต่อการประเมิน", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1VVExtzSnBQEr3kVdNPynvH18Y2egCdAP", "ภาพใบ": "https://lh3.googleusercontent.com/d/1Pli63F_VHGV07mwtUo_HdDBD-tMVkZGP", "ภาพดอก": "https://lh3.googleusercontent.com/d/1UC5RAj5tT4KTBFjCONQBf1-z8wI6UuUr", "ภาพผล": "https://lh3.googleusercontent.com/d/1rnncZfhZqkkritRGX2LN53ojtKf_ZV8H" },
+            { "พันธุ์": "ตะบัน", "ชื่อวิทยาศาสตร์": "Xylocarpus rumphii (Kostel.) Mabb.", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบประกอบ", "ชนิดใบ": "ใบประกอบขนนกปลายคู่", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "", "สถานะ": "ยังไม่ได้รับการประเมิน", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1ytqIdsucQnxSf2DnN8J_BmfieFbTH5Qv", "ภาพใบ": "https://lh3.googleusercontent.com/d/1o-6fm_o1X3ZxHNqL5qldJDOUsJE25iJV", "ภาพดอก": "https://lh3.googleusercontent.com/d/1_aNqQ73jXbJP-cEipNXD0RTiXZWeF51H", "ภาพผล": "https://lh3.googleusercontent.com/d/1Q3nk1HijBPU86vLToz24_sjXhvEwD5JB" },
+            { "พันธุ์": "ตะบูนขาว", "ชื่อวิทยาศาสตร์": "Xylocarpus granatum J. Koenig", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบประกอบ", "ชนิดใบ": "ใบประกอบขนนกปลายคู่", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "รากมีพูพอนคล้ายแผ่นกระดาน", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/16Azqw0AEEQmg_HnpHROlmHaCn7wcKW3q", "ภาพใบ": "https://lh3.googleusercontent.com/d/1IL1D-GcL8L_WF4NYtTpWz7MuoDaGa6PH", "ภาพดอก": "https://lh3.googleusercontent.com/d/1p2KsJFVhVdZmoDZGpXCxmwGuJ-iGR7_z", "ภาพผล": "https://lh3.googleusercontent.com/d/1mUgIfyiVnYhOHN76rLtxB_mG19gtZ0TS" },
+            { "พันธุ์": "ตะบูนดำ", "ชื่อวิทยาศาสตร์": "Xylocarpus moluccensis (Lam.) M. Roem.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบประกอบ", "ชนิดใบ": "ใบประกอบขนนกปลายคู่", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "รากมีพูพอนคล้ายแผ่นกระดาน", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/14J3j5OJDJrcQuK2ZhvQngyYIem6Aq9Zt", "ภาพใบ": "https://lh3.googleusercontent.com/d/1XU2GVj0Y_ve3m2m31tWVY783vGaP00aT", "ภาพดอก": "https://lh3.googleusercontent.com/d/1rEhKTbehlbQVO_SaOvxNKT1Z6Ter3k6E", "ภาพผล": "https://lh3.googleusercontent.com/d/1MvvhsEPl9VWmdy0YdVXuqfH5yyn735-p" },
+            { "พันธุ์": "ตาตุ่มทะเล", "ชื่อวิทยาศาสตร์": "Excoecaria agallocha L.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงสลับ", "ราก": "รากอากาศคล้ายกรวยคว่ำ", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1BGChpvfahgj4Nx3HIdgjdUbjBrvjXZ8B", "ภาพใบ": "https://lh3.googleusercontent.com/d/1nwPbGKu4O8zFkWzzO8kfuUZneFP1g4p_", "ภาพดอก": "https://lh3.googleusercontent.com/d/1cr2EJtqZBwn7Hoz2NZpwyGCNNe0wrgxE", "ภาพผล": "https://lh3.googleusercontent.com/d/1VbkayEv6ioG_oBEA5eKgWQvuHE0vcKle" },
+            { "พันธุ์": "ตีนเป็ดทราย", "ชื่อวิทยาศาสตร์": "Cerbera manghas L.", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1POOYhh5McyJKemno0pU5sztyT6f_jXHC", "ภาพใบ": "https://lh3.googleusercontent.com/d/1FXD_xlXE3DSo64msFENLApUMkZ--shv9", "ภาพดอก": "https://lh3.googleusercontent.com/d/1IbNahJKezo2gYow39fMH0fpk0RzURpQt", "ภาพผล": "https://lh3.googleusercontent.com/d/1PKSt3-FLzVpRDT5bKTiz7W0B-H-fVLEw" },
+            { "พันธุ์": "ตีนเป็ดทะเล", "ชื่อวิทยาศาสตร์": "Cerbera odollam Gaertn.", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1n-Fg6gLiG-8uVIsLwEN6fKjcrbg6EVlW", "ภาพใบ": "https://lh3.googleusercontent.com/d/11NOS19wLVmv7BwHfNHayLlum7zhpLzOE", "ภาพดอก": "https://lh3.googleusercontent.com/d/1ipOmUxF4UE0wschhSAYKC9Wez6SkzfGK", "ภาพผล": "https://lh3.googleusercontent.com/d/1LSp6hL3YiJFyfkOsAjvabJdCPvFERuF9" },
+            { "พันธุ์": "ถอบแถบทะเล", "ชื่อวิทยาศาสตร์": "Derris trifoliata Lour.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้เลื้อย", "ใบ": "ใบประกอบ", "ชนิดใบ": "ใบประกอบขนนกปลายคี่", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "", "สถานะ": "ยังไม่ได้รับการประเมิน", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1kvlw77VQbwPCotHddVxAHwKogLJ-M4Im", "ภาพใบ": "https://lh3.googleusercontent.com/d/1rsewpZClwK6p1sgXRvoIu1qbl5iyttkD", "ภาพดอก": "https://lh3.googleusercontent.com/d/1HRh50yv0JzygIRgdN6bElI90BNANXQrw", "ภาพผล": "https://lh3.googleusercontent.com/d/1laY7IJkGHKq9jOPTiKEuQcdWg1Gh4VfR" },
+            { "พันธุ์": "ถั่วขาว", "ชื่อวิทยาศาสตร์": "Bruguiera cylindrica (L.) Blume", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "รากอากาศคล้ายเข่า", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1MfRrbXcMO8Q7jGQTKv1pSHWgVS5rr3Tf", "ภาพใบ": "https://lh3.googleusercontent.com/d/1Qd76AfYBFiJ-vDEI-xuq9F7bsP8diRXr", "ภาพดอก": "https://lh3.googleusercontent.com/d/1Tb1L5kVV7desggM5r3p2mwNXn2JGMWyQ", "ภาพผล": "https://lh3.googleusercontent.com/d/1h8Wch47rptusFHeiMgMQ-beUdN2UKZ8T" },
+            { "พันธุ์": "ถั่วดำ", "ชื่อวิทยาศาสตร์": "Bruguiera parviflora (Roxb.) Wight & Arn. ex Griff ", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "รากอากาศคล้ายเข่า", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1fZP9oN6p_gVaXnk3ih6sf4_hPwQ0rqi6", "ภาพใบ": "https://lh3.googleusercontent.com/d/1leoYESoZxrXNfqgT3rIBISvan2G9J2XG", "ภาพดอก": "https://lh3.googleusercontent.com/d/1l8QTHx0WjFYF6O-NTRG2DFqbXMXkcCfF", "ภาพผล": "https://lh3.googleusercontent.com/d/1ZsdcYEYr6J3Vy75fEtdgoyloJtBrcI2C" },
+            { "พันธุ์": "เทพี", "ชื่อวิทยาศาสตร์": "Caesalpinia crista L.", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้เลื้อย", "ใบ": "ใบประกอบ", "ชนิดใบ": "ใบประกอบขนนกปลายคู่", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "", "สถานะ": "ยังไม่ได้รับการประเมิน", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1YschLwLDZ7-UiwNRBs-YlFcfgrJv4aW7", "ภาพใบ": "https://lh3.googleusercontent.com/d/1gISuCtpvJYuy-b5Uab3rO4xe-ajQ8pVb", "ภาพดอก": "https://lh3.googleusercontent.com/d/1E32WNT07GWVHvsaCFArBhFmSZdiOBL-1", "ภาพผล": "https://lh3.googleusercontent.com/d/1F0LmrN3nyFtLyvF6WebF7tJVx6ZlJT_H" },
+            { "พันธุ์": "เทียนทะเล", "ชื่อวิทยาศาสตร์": "Pemphis acidula J. R. & G. Forst.", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/13AsrlD1ojTD1gqjBsMPnEVfWwgOLZMFu", "ภาพใบ": "https://lh3.googleusercontent.com/d/1tPsn8csqSAYaulyXo6Zv53-pmeCkfz7V", "ภาพดอก": "https://lh3.googleusercontent.com/d/1ugrBt0dImD-pCVMfqJEVkrz9SFSKlV1d", "ภาพผล": "https://lh3.googleusercontent.com/d/1f2hFWjolHvSzHraNMAC-NogsGJj7ElH_" },
+            { "พันธุ์": "นนทรี", "ชื่อวิทยาศาสตร์": "Peltophorum pterocarpum (DC) Backer ex K. Heyne", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบประกอบ", "ชนิดใบ": "ใบประกอบขนนกปลายคู่", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "", "สถานะ": "ยังไม่ได้รับการประเมิน", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1dOsC7lpJj3JLHYvIm8_1vpStaugfbrQd", "ภาพใบ": "https://lh3.googleusercontent.com/d/1J1_liu8yG86_QJe2JZgiDVMgSLZIeTt4", "ภาพดอก": "https://lh3.googleusercontent.com/d/1TAMzYMZF1JOD7ACC2zP6OpP1phOtHH24", "ภาพผล": "https://lh3.googleusercontent.com/d/1nAxMPLuGzgWXsObPyMy6s6rv4bu-HTF9" },
+            { "พันธุ์": "น้ำนอง", "ชื่อวิทยาศาสตร์": "Brownlowia tersa (L.) Kosterm", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "", "สถานะ": "ใกล้ถูกคุกคาม", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1HwpyPeM9-H5xFGJJ7J9BM_yGXJQLbxOs", "ภาพใบ": "https://lh3.googleusercontent.com/d/1P1OQdfobeKCqt5Qyh8zIZpvrZ9yGpCHZ", "ภาพดอก": "https://lh3.googleusercontent.com/d/15TyNhUEKcQrZYmHPlT6tlluIBaRPuiM4", "ภาพผล": "https://lh3.googleusercontent.com/d/1eCaIB-M8TcLHeEWtPDEtvR3EtBl6sK0U" },
+            { "พันธุ์": "น้ำนองใบโพ", "ชื่อวิทยาศาสตร์": "Brownlowia argentata Kurz.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "", "สถานะ": "ข้อมูลไม่เพียงพอต่อการประเมิน", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1bvDx-rDeXTAN96xuSGY_fDlHQtiX4-t1", "ภาพใบ": "https://lh3.googleusercontent.com/d/1y4H8HMaQ2lLNMIcGPj9X7qrElqo6X9A8", "ภาพดอก": "", "ภาพผล": "https://lh3.googleusercontent.com/d/1WBA8-BoSTMx9BHFEw9mEgltXklQKB9vD" },
+            { "พันธุ์": "ปอทะเล", "ชื่อวิทยาศาสตร์": "Hibiscus tiliaceus L.", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงสลับ", "ราก": "", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1_5_fZtQp79VP45u4JujFGApSPAg1TIhN", "ภาพใบ": "https://lh3.googleusercontent.com/d/1WttbUU5aHn3YQNTFdIYK_CSZRSRqAhPQ", "ภาพดอก": "https://lh3.googleusercontent.com/d/1yvjRzYfXRrPkK5QBC6gs2-gObHY7l2vF", "ภาพผล": "https://lh3.googleusercontent.com/d/1H73hEgO-hhI11N5JOfgukzADbe9o2aiB" },
+            { "พันธุ์": "โปรงขาว", "ชื่อวิทยาศาสตร์": "Ceriops decandra (Griff.) W. Theob.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "รากอากาศคล้ายเข่า", "สถานะ": "ใกล้ถูกคุกคาม", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1SUv7Rqg05HJXdwLJXNw0UfkTt9NvKEVA", "ภาพใบ": "https://lh3.googleusercontent.com/d/1IigluVSCVFw8yCoKbk4OC0M6hUyZHwKb", "ภาพดอก": "https://lh3.googleusercontent.com/d/1_IIqlvuMlLThZLT-IUFcwXQ1qiIEI66E", "ภาพผล": "https://lh3.googleusercontent.com/d/1YeCQsOwI_BgGPy_jrmL9R2tJo334FUdR" },
+            { "พันธุ์": "โปรงแดง", "ชื่อวิทยาศาสตร์": "Ceriops tagal (Perr.) C.B. Rob.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "รากอากาศคล้ายเข่า", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1-DEATzMq5PyE7tGr4dyglsJ6N8iva3Wv", "ภาพใบ": "https://lh3.googleusercontent.com/d/1Wa_zddM1UikWGCZxqMyHxTBQ74DTMw7x", "ภาพดอก": "https://lh3.googleusercontent.com/d/1QXPdhydrxb3IJGQHdQZoHZPIZw42Hr27", "ภาพผล": "https://lh3.googleusercontent.com/d/1jvco6aJ-JlVdL6uXexc5mY4iyfgDZzWd" },
+            { "พันธุ์": "โปรงหมู", "ชื่อวิทยาศาสตร์": "Ceriops zippeliana Blume", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "รากอากาศคล้ายเข่า", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1wcMfIjLUiKmUG8toICuiScBX3oqUzG0W", "ภาพใบ": "https://lh3.googleusercontent.com/d/1AuKCrGmuWlF0hQaJyTgLDjtBC9BdUVX-", "ภาพดอก": "https://lh3.googleusercontent.com/d/1uPBRiRvmiYNXufCBIwz_9Rm1q0mHFYyK", "ภาพผล": "https://lh3.googleusercontent.com/d/1sBHILJBvbE_2ubf8wkHkrHfnswrCh-6i" },
+            { "พันธุ์": "ฝาดดอกขาว", "ชื่อวิทยาศาสตร์": "Lumnitzera racemosa Willd.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "รากอากาศคล้ายเข่า", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1UevG3uaBzjCXmYAzkKNCpuucDYudTIb_", "ภาพใบ": "https://lh3.googleusercontent.com/d/1G2ruPAr2klFC26p6czyFE0hTzSMtwa9C", "ภาพดอก": "https://lh3.googleusercontent.com/d/1VS4BMDn8nEtf-cXfXBLuL24-ec4UIl__", "ภาพผล": "https://lh3.googleusercontent.com/d/10QWpdRpq70IBgfjbTpS__VZnrcCl7v2-" },
+            { "พันธุ์": "ฝาดดอกแดง", "ชื่อวิทยาศาสตร์": "Lumnitzera littorea (Jack) Voigt", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "รากอากาศคล้ายเข่า", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1Gz6RSBLch1HnQzxHHeuRT3qXssdNKn-G", "ภาพใบ": "https://lh3.googleusercontent.com/d/1k4rhZxjc-KBY67hBvPNp1fJiDTJ3MXWk", "ภาพดอก": "https://lh3.googleusercontent.com/d/1oW9vEXbdXCrmjcoIM0Bky3R9yeMBlJay", "ภาพผล": "https://lh3.googleusercontent.com/d/1rEDhirs2NQrQA9JYXeycriDxibqrIZ18" },
+            { "พันธุ์": "พังกา-ถั่วขาว", "ชื่อวิทยาศาสตร์": "Bruguiera hainesii C.G. Rogers", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "รากอากาศคล้ายเข่า", "สถานะ": "ใกล้สูญพันธุ์อย่างยิ่ง", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/18eVALJIo5zpQfxObBL9rWTaq-GqwnO_y", "ภาพใบ": "https://lh3.googleusercontent.com/d/1CUCJh4DU5ESKZlYVHOZp_IWi2l18bbKO", "ภาพดอก": "https://lh3.googleusercontent.com/d/1tZwirGru5e3iq-9Fx7oJnmcxbF96Nf0r", "ภาพผล": "https://lh3.googleusercontent.com/d/1MDAzfTJ6z2YOTUFDZe2CyvKqskdpXW3_" },
+            { "พันธุ์": "พังกาหัวสุมดอกขาว", "ชื่อวิทยาศาสตร์": "Bruguiera sexangula (Lour) Poir.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "รากอากาศคล้ายเข่า", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1Inu7kyZWZDUuCmPabfreZJFNgHe47Ju-", "ภาพใบ": "https://lh3.googleusercontent.com/d/1LHb7MQLR4Jxo2BaKmELfYr9x2BgLD5_i", "ภาพดอก": "https://lh3.googleusercontent.com/d/1c1EuicUJPlWkFNsxBHrI_nv5eCeMmGdg", "ภาพผล": "https://lh3.googleusercontent.com/d/19Tp7uT83jDt_aCleFBlCHrbtiwRn-u2f" },
+            { "พันธุ์": "พังกาหัวสุมดอกแดง", "ชื่อวิทยาศาสตร์": "Bruguiera gymnorrhiza (L.) Savigny", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "รากอากาศคล้ายเข่า", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1qeu_uwcUWOruJU-bcJ8Bjn-017SCO6rL", "ภาพใบ": "https://lh3.googleusercontent.com/d/14TQpZ5KYU7BDrfVzM_JrTSUjZH8Q5nTU", "ภาพดอก": "https://lh3.googleusercontent.com/d/1yDriUTgxukba0fIGqOrtoPuiX-QmgzNL", "ภาพผล": "https://lh3.googleusercontent.com/d/1e2uZ8jM6ia6pe7C4sh56xhp0e7KAgQJW" },
+            { "พันธุ์": "โพทะเลดอกตั้ง", "ชื่อวิทยาศาสตร์": "Thespesia populnea (L.) Sol. ex Corrêa", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1BwUwhMIVEwdJAO0x0oYwkYI3SKsThB-B", "ภาพใบ": "https://lh3.googleusercontent.com/d/1sRZeD6X9G7xlHPNY7Hc0KX3Xz8cZEqAS", "ภาพดอก": "https://lh3.googleusercontent.com/d/1FN80sfRfA0Hw3Dlakf1tdAP9NjX38qFF", "ภาพผล": "https://lh3.googleusercontent.com/d/19G6zNx2IhNe7JO5dp3nXFal82sdIbzzM" },
+            { "พันธุ์": "โพทะเลดอกย้อย", "ชื่อวิทยาศาสตร์": "Thespesia populneoides (Roxb.) Kostel.", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "", "สถานะ": "ยังไม่ได้รับการประเมิน", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1sl1mhkKII4ZNJVjsLl3RdyIE8Xim2Gfp", "ภาพใบ": "https://lh3.googleusercontent.com/d/15-iatu20n54UI6aEzmZpNycXhLp386BZ", "ภาพดอก": "https://lh3.googleusercontent.com/d/10KzMort7L1SPGwu60L-h85nHUmu5BnNi", "ภาพผล": "https://lh3.googleusercontent.com/d/1Mkv8ri9v8KsjUW7fYozNqX2T2I483fY1" },
+            { "พันธุ์": "มะคะ", "ชื่อวิทยาศาสตร์": "Cynometra ramiflora L.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบประกอบ", "ชนิดใบ": "ใบประกอบขนนกปลายคู่", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "รากมีพูพอน", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/18zOIETG7fF6aACYKTUdeoRc0L5AT0RaQ", "ภาพใบ": "https://lh3.googleusercontent.com/d/1fbbQzHrxlZ0faowawTEIwc20TZgvtIX0", "ภาพดอก": "https://lh3.googleusercontent.com/d/1-eXDJbhEm5K9C1N4JIjRWR8lB-wyCde3", "ภาพผล": "https://lh3.googleusercontent.com/d/17Dxvs_6hGu4yK8tZEK1p3gGdcsaRzyj_" },
+            { "พันธุ์": "มังคะ", "ชื่อวิทยาศาสตร์": "Cynometra iripa Kostel.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบประกอบ", "ชนิดใบ": "ใบประกอบขนนกปลายคู่", "การเรียงตัวของใบ": "เรียงสลับ", "ราก": "", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1UpdpznyIUTfa75pnQ2--YgLeOz42xZzW", "ภาพใบ": "https://lh3.googleusercontent.com/d/1bvynxb6NCi-WcYDYonnXaNY4Tgj6-uzH", "ภาพดอก": "https://lh3.googleusercontent.com/d/1F7d-0FoHjQJ4s6NvD71cZpWPsAi2VX4P", "ภาพผล": "https://lh3.googleusercontent.com/d/14cG19BDERKCjNBT395yt2STg3aI5i4yf" },
+            { "พันธุ์": "รังกะแท้", "ชื่อวิทยาศาสตร์": "Kandelia candel (L.) Druce", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงสลับ", "ราก": "", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1eDrv8JC7Rr6gweuUCHonQ6eG4945bMZ4", "ภาพใบ": "https://lh3.googleusercontent.com/d/1MU8GruICy6-x3_OPD_aXZIP8WIwQGb2y", "ภาพดอก": "https://lh3.googleusercontent.com/d/13nejETwrzybq56WDfwchkHizdb49DljM", "ภาพผล": "https://lh3.googleusercontent.com/d/1skMrN7nEHhVPGrdwPkGNF6sYbfiNOGeg" },
+            { "พันธุ์": "ลำพู", "ชื่อวิทยาศาสตร์": "Sonneratia caseolaris (L.) Engl.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "รากอากาศคล้ายกรวยคว่ำ", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1UU8iwLMJKJV_Myk3WTkn7EdhD9o6az9d", "ภาพใบ": "https://lh3.googleusercontent.com/d/1myiwxt5XRcxEUDN7jgO6lKUpaVhIBTM6", "ภาพดอก": "https://lh3.googleusercontent.com/d/19rVVpFQkc7TPoxpz4Nt7ebXn2wm7nFN2", "ภาพผล": "https://lh3.googleusercontent.com/d/1-5ucnwCsBevdQ7HfBZEp50z3pV-mbQa6" },
+            { "พันธุ์": "ลำพูทะเล", "ชื่อวิทยาศาสตร์": "Sonneratia alba Sm.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "รากอากาศคล้ายกรวยคว่ำ", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1ASc-UCtqKcoI3EgwOf-QCW_MENtTh_Hr", "ภาพใบ": "https://lh3.googleusercontent.com/d/1sQHtsucl_Flgxesg9VmPLMNB80gLIvET", "ภาพดอก": "https://lh3.googleusercontent.com/d/1xe8UFAhOF63hL1a_b_2U0YSagyKeJ9ha", "ภาพผล": "https://lh3.googleusercontent.com/d/1Ya-oRm2qKRt9UStgDuFHFeb9v0DVQR_H" },
+            { "พันธุ์": "ลำแพน", "ชื่อวิทยาศาสตร์": "Sonneratia ovata Backer", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "รากอากาศคล้ายกรวยคว่ำ", "สถานะ": "ใกล้ถูกคุกคาม", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1CN3P6WiCKPfapK0wQMxrgHQqQf6wsE1d", "ภาพใบ": "https://lh3.googleusercontent.com/d/16Zx2BQa9Btb3hhm5TlGY-b-XKxKY7Mxm", "ภาพดอก": "https://lh3.googleusercontent.com/d/10eX2_obYKHHX-e0O0T4eBsb9mP5wcoFD", "ภาพผล": "https://lh3.googleusercontent.com/d/1vZKt0W3YhZtkyhIhbZyB9TKIY2_rInDP" },
+            { "พันธุ์": "ลำแพนหิน", "ชื่อวิทยาศาสตร์": "Sonneratia griffithii Kurz", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "รากอากาศคล้ายกรวยคว่ำ", "สถานะ": "ใกล้สูญพันธุ์อย่างยิ่ง", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/142v42-nqXnkCjI7skbVrcclkvSrlrDmb", "ภาพใบ": "https://lh3.googleusercontent.com/d/1FCtft1L1QUmdaX0ygR4q-GTdzrJZeXDq", "ภาพดอก": "https://lh3.googleusercontent.com/d/1UfWpGREJWh1_f9H9qRWMijcgoi4YJU70", "ภาพผล": "https://lh3.googleusercontent.com/d/1-ESA-ZBUaH9dU9FCEeDeO3WjsGpHe_Qx" },
+            { "พันธุ์": "สมอทะเล", "ชื่อวิทยาศาสตร์": "Shirakiopsis indica (Willd.) Esser", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1mipWLi2jla6jXoWff7n1C53QNk4E_ZP5", "ภาพใบ": "https://lh3.googleusercontent.com/d/1orVTuAjSlyJslCNhy_UYwMEsaooSTYJn", "ภาพดอก": "https://lh3.googleusercontent.com/d/1g0OOuHBS3IaQeYNmQC1peDftKp5GuI_5", "ภาพผล": "https://lh3.googleusercontent.com/d/1xQjtRqlMgMLQx_EUVvgKo1VtXaizmM-B" },
+            { "พันธุ์": "สวาด", "ชื่อวิทยาศาสตร์": "Caesalpinia bonduc (L.) Roxb.", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้เลื้อย", "ใบ": "ใบประกอบ", "ชนิดใบ": "ใบประกอบขนนกปลายคู่", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1N1Oalit9JCFqZMoqQecLNZNGLCyp0khB", "ภาพใบ": "https://lh3.googleusercontent.com/d/1EX1uykc5UXaSdaAr-x72Xx_BQ9News3I", "ภาพดอก": "https://lh3.googleusercontent.com/d/1p9t1GimexopywJ0YUiO2H7gubM9EiRM8", "ภาพผล": "https://lh3.googleusercontent.com/d/1cfK7yXMxIL2TReuuUIzuDuGsQBjwjPUl" },
+            { "พันธุ์": "สักขี", "ชื่อวิทยาศาสตร์": "Dalbergia candenatensis (Dennst.) Prain", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้เลื้อย", "ใบ": "ใบประกอบ", "ชนิดใบ": "ใบประกอบขนนกปลายคี่", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "", "สถานะ": "ยังไม่ได้รับการประเมิน", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1v4tGPDlzOwWamzkw3LDOEBqRjn2fTgob", "ภาพใบ": "https://lh3.googleusercontent.com/d/1ORO7oZQTmVqcBXGDnm6u6KztnJ_sKAJ2", "ภาพดอก": "https://lh3.googleusercontent.com/d/1Z_2BYTV-c7oWFL-ZvxoOjWACbwBWAsnz", "ภาพผล": "https://lh3.googleusercontent.com/d/1uYG7_kJcbDhGXe3wCJJul-QByQ00f4ts" },
+            { "พันธุ์": "เสม็ดขาว", "ชื่อวิทยาศาสตร์": "Melaleuca cajuputi Maton & Sm. ex R. Powell subsp. cumingiana (Turcz.) Barlow", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1XYRQRDbfVUCeobYPmNIjSfsHd-syEQx1", "ภาพใบ": "https://lh3.googleusercontent.com/d/1hTo_1cp18RVibSm01BfyLirjviy2SJaS", "ภาพดอก": "https://lh3.googleusercontent.com/d/1ClkpYnU0SZAtujQL96gN8ZkeL3hXbBCm", "ภาพผล": "https://lh3.googleusercontent.com/d/1OCb-FqqI8VH0gyJOwVBZIuZSPYgZ8B9X" },
+            { "พันธุ์": "แสมขน", "ชื่อวิทยาศาสตร์": "Avicennia lanata Ridl.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "รากอากาศคล้ายดินสอ", "สถานะ": "มีแนวโน้มใกล้สูญพันธุ์", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1WQXLUHQ3VxJpQxj2-7DXiPLCmur0QuPn", "ภาพใบ": "https://lh3.googleusercontent.com/d/18W3tBCzMGy-mwSYSuNzWdvZ023FrxW_2", "ภาพดอก": "https://lh3.googleusercontent.com/d/1hU-M97nB4iSGpm0MClrZlygBfeZMtOgs", "ภาพผล": "https://lh3.googleusercontent.com/d/1MrBg_JhfykVxfTSLRMWm1vn5ajWNEQfZ" },
+            { "พันธุ์": "แสมขาว", "ชื่อวิทยาศาสตร์": "Avicennia alba Blume", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "รากอากาศคล้ายดินสอ", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1X0iD3eqauSJGy4hW65TJpXrsl-_3Msv7", "ภาพใบ": "https://lh3.googleusercontent.com/d/19OTwcoW7vy5lwENyBmY-kvDN76Nymgdq", "ภาพดอก": "https://lh3.googleusercontent.com/d/1HKtpIqxhMZDE7Ly2hsfxFuAJUlQI8pAt", "ภาพผล": "https://lh3.googleusercontent.com/d/1r_pbtGhOhw9Z7VPthbzv4BNCCzSpV4e9" },
+            { "พันธุ์": "แสมดำ", "ชื่อวิทยาศาสตร์": "Avicennia officinalis L.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "รากอากาศคล้ายดินสอ", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1FMCZZjl-pAIMVBJp3k2oHetxebLSLceq", "ภาพใบ": "https://lh3.googleusercontent.com/d/1MixsA3D5XVpsxNrg5YpdJUJ-hKbzkKm9", "ภาพดอก": "https://lh3.googleusercontent.com/d/15M0UKHPFA-HjvfHeCr5Xjn3AL41wtNN-", "ภาพผล": "https://lh3.googleusercontent.com/d/1IhurxT2a3D8kVDHpLYDxiGiquxUuwKSM" },
+            { "พันธุ์": "แสมทะเล", "ชื่อวิทยาศาสตร์": "Avicennia marina (Forssk.) Vierh.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "รากอากาศคล้ายดินสอ", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1qf--OKnHijUg5rSUR8bs0h5GNVQiuJ5a", "ภาพใบ": "https://lh3.googleusercontent.com/d/15y8o_mbCIpq2UdIrViCnp7duktdlL3PN", "ภาพดอก": "https://lh3.googleusercontent.com/d/1a36cvrhScVbSUFnhESUtvg9z7Tzbur0q", "ภาพผล": "https://lh3.googleusercontent.com/d/1HgJAZ_jSHXm1sCei3a96jeshJaRq6kF2" },
+            { "พันธุ์": "หงอนไก่ทะเล", "ชื่อวิทยาศาสตร์": "Heritiera littoralis Aiton", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "รากมีพูพอนคล้ายแผ่นกระดาน", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1gqER0NsbOJREPLSsT9_4W5eBrd60iwhG", "ภาพใบ": "https://lh3.googleusercontent.com/d/1cIdcCpz6FjaTSRlRo9i9LfH-WPTEzojc", "ภาพดอก": "https://lh3.googleusercontent.com/d/1uZljVojMKsvRC4psKBuWke1zkoW1Ivai", "ภาพผล": "https://lh3.googleusercontent.com/d/1v3FcEY6o5ejS5xOTCjXtWjr_NzzBrp_-" },
+            { "พันธุ์": "หงอนไก่ใบเล็ก", "ชื่อวิทยาศาสตร์": "Heritiera fomes Buch. –Ham.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงสลับ", "ราก": "รากอากาศคล้ายดินสอ", "สถานะ": "ใกล้สูญพันธุ์", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1mEcuHdF18vUnud0fOmi7XZk_7rYE_ql8", "ภาพใบ": "https://lh3.googleusercontent.com/d/1_sxfSYoGTZi_VDDFk_mORX2dUyzw9PCR", "ภาพดอก": "https://lh3.googleusercontent.com/d/1oL2bNd03QjTQCUR1QCdyfflYAzMnRtzm", "ภาพผล": "https://lh3.googleusercontent.com/d/1S6OlLDk2j0f9Mv9etc3pHXiQq3a5_lSK" },
+            { "พันธุ์": "หมามุ่ยช้าง", "ชื่อวิทยาศาสตร์": "Mucuna gigantea (Willd.) DC.", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้เลื้อย", "ใบ": "ใบประกอบ", "ชนิดใบ": "ใบประกอบขนนกปลายคี่", "การเรียงตัวของใบ": "เรียงสลับ", "ราก": "", "สถานะ": "ยังไม่ได้รับการประเมิน", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/135sZmW36ggrKr2B23g1Y6lWhQi5zjFcl", "ภาพใบ": "https://lh3.googleusercontent.com/d/1M072hibuZ6t8cYgm6nUvGoc4GbNxRQiK", "ภาพดอก": "https://lh3.googleusercontent.com/d/1RDji0fmy2XQDaDEjLXineo2W-Odseqdu", "ภาพผล": "https://lh3.googleusercontent.com/d/1hZo0iuGPJFm6_YcEMWAmjnkU02rcpZcU" },
+            { "พันธุ์": "หยีทะเล", "ชื่อวิทยาศาสตร์": "Pongamia pinnata (L.) Pierre", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้ต้นขนาดเล็ก", "ใบ": "ใบประกอบ", "ชนิดใบ": "ใบประกอบขนนกปลายคี่", "การเรียงตัวของใบ": "เรียงสลับ", "ราก": "", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1xi5HD7OupVLtts2eiHkGDti14OeVvSB9", "ภาพใบ": "https://lh3.googleusercontent.com/d/1-yGuePS84a6fPWXyQ-ADkzWdDtCnakl2", "ภาพดอก": "https://lh3.googleusercontent.com/d/1wsqXqsIUwQMho1TMEpDM8uDBHtMVCIBb", "ภาพผล": "https://lh3.googleusercontent.com/d/1pgY_fEUpyPWf-DK_BaY6cSwCkwQ5YHd7" },
+            { "พันธุ์": "หลุมพอทะเล", "ชื่อวิทยาศาสตร์": "Intsia bijuga (Colebr.) Kuntze", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบประกอบ", "ชนิดใบ": "ใบประกอบขนนกปลายคี่", "การเรียงตัวของใบ": "เรียงสลับ", "ราก": "", "สถานะ": "มีแนวโน้มใกล้สูญพันธุ์", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1clraOjwIP9KkCigh2d-efm6TGaONqPru", "ภาพใบ": "https://lh3.googleusercontent.com/d/1R32-9uSfrNvfOp7SIdt7Scq7FU0SMoZ_", "ภาพดอก": "https://lh3.googleusercontent.com/d/15QgBQIzGjJ7lVtqVTc-lHUjLkXnsKDrx", "ภาพผล": "https://lh3.googleusercontent.com/d/16A_JXsLWRC1Q-2ehVanQyUMKfk0rsrMl" },
+            { "พันธุ์": "หัวลิง", "ชื่อวิทยาศาสตร์": "Sarcolobus globosus Wall.", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้เลื้อย", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้าม", "ราก": "", "สถานะ": "ยังไม่ได้รับการประเมิน", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1ZbHiQIftlhoug9rFObqWjB7oQT9H05q3", "ภาพใบ": "https://lh3.googleusercontent.com/d/1KRlZ0Ivv3JoBXcApAAi4ZhR5oHmippUS", "ภาพดอก": "https://lh3.googleusercontent.com/d/11H_Yy7OqxWLfj7kKH3TYqe9m195sheYC", "ภาพผล": "https://lh3.googleusercontent.com/d/1wq929SRZTIVPap3p_NT8z5a-pwt6KGTM" },
+            { "พันธุ์": "หูกวาง", "ชื่อวิทยาศาสตร์": "Terminalia catappa L.", "พันธุ์ไม้": "ไม่แท้", "วิสัย": "ไม้ต้น", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงเวียนสลับ", "ราก": "", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1kSeCOdVUPuBJm69v0dHrkiMygFByqqtD", "ภาพใบ": "https://lh3.googleusercontent.com/d/1dD1_0L5FqveQoA-lmyBjW0Eo0mEkdcxC", "ภาพดอก": "https://lh3.googleusercontent.com/d/1OjU-eqKTxFfvuZ9fJmBk3Cid1-ZTQdVX", "ภาพผล": "https://lh3.googleusercontent.com/d/1nhOXYjidtf5W8HGJB43srMcY0xNwbVP9" },
+            { "พันธุ์": "เหงือกปลาหมอเครือ", "ชื่อวิทยาศาสตร์": "Acanthus volubilis Wall.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้เลื้อย", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1myoOsz6BKSiGeRdHvsQ0G0yZOjvC4IDc", "ภาพใบ": "https://lh3.googleusercontent.com/d/1UVMDthR_-LPef5O95Orp5t974eukjGru", "ภาพดอก": "https://lh3.googleusercontent.com/d/1YdmuwoeWaWrPBj8ZwRfSrImd1SqFbs7G", "ภาพผล": "https://lh3.googleusercontent.com/d/1iuc4dzxdbNtSUU03BUHdkDlkgNeLg1wk" },
+            { "พันธุ์": "เหงือกปลาหมอดอกขาว", "ชื่อวิทยาศาสตร์": "Acanthus ebracteatus Vahl.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้พุ่ม", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/19INg6nDNfcbAaFPKGZfMjN457I1UFUTC", "ภาพใบ": "https://lh3.googleusercontent.com/d/1P7nU_u2-5jQpKqjQ5iQFSxu9LbtirD8x", "ภาพดอก": "https://lh3.googleusercontent.com/d/1kCxUtI7-NZnFlmJOLKdseTllV9Mghj__", "ภาพผล": "https://lh3.googleusercontent.com/d/1NWq5exy1ui2DVTVt7g7bIaWvaCuQdNap" },
+            { "พันธุ์": "เหงือกปลาหมอดอกม่วง", "ชื่อวิทยาศาสตร์": "Acanthus ilicifolius L.", "พันธุ์ไม้": "แท้", "วิสัย": "ไม้เลื้อย", "ใบ": "ใบเดี่ยว", "ชนิดใบ": "", "การเรียงตัวของใบ": "เรียงตรงข้ามสลับตั้งฉาก", "ราก": "", "สถานะ": "มีความเสี่ยงน้อย", "ภาพลำต้น": "https://lh3.googleusercontent.com/d/1DX-5bpt4reB4VPxvuj1WUcgELxEKhS_y", "ภาพใบ": "https://lh3.googleusercontent.com/d/1T53TjwRwYTSB3dxe2hgIquIYeFoPYv-Q", "ภาพดอก": "https://lh3.googleusercontent.com/d/1WlvQ-k-u0hxns_LApOcpFhqZT6n1dfEe", "ภาพผล": "https://lh3.googleusercontent.com/d/1sTgmrGAuNhqpPZJXrdQ7t1Et08GEn0wi" },
+
+        ];
+
+        // Global variables
+        let filteredData = [];
+        let currentQuiz = null;
+        let quizTimer = null;
+        let currentQuestionIndex = 0;
+        let quizResults = [];
+        let currentMode = 'learning';
+
+        // Initialize app
+        function init() {
+            loadData();
+            setupFilters();
+            renderList();
+            setupEventListeners();
+        }
+
+        // Load and prepare data
+        function loadData() {
+            filteredData = [...DATA];
+        }
+
+        // Setup filter options
+        function setupFilters() {
+            const habitats = [...new Set(DATA.map(item => item.วิสัย))];
+            const leafTypes = [...new Set(DATA.map(item => item.ชนิดใบ))];
+            const leafArrangements = [...new Set(DATA.map(item => item.การเรียงตัวของใบ))];
+            const plantTypes = [...new Set(DATA.map(item => item.พันธุ์ไม้))];
+            const statuses = [...new Set(DATA.map(item => item.สถานะ))];
+
+            populateSelect('filter-habitat', habitats);
+            populateSelect('filter-leaf-type', leafTypes);
+            populateSelect('filter-leaf-arrangement', leafArrangements);
+            populateSelect('filter-plant-type', plantTypes);
+            populateSelect('filter-status', statuses);
+        }
+
+        function populateSelect(selectId, options) {
+            const select = document.getElementById(selectId);
+            options.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option;
+                optionElement.textContent = option;
+                select.appendChild(optionElement);
+            });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('search-name').addEventListener('input', applyFilters);
+            document.getElementById('filter-habitat').addEventListener('change', applyFilters);
+            document.getElementById('filter-leaf-type').addEventListener('change', applyFilters);
+            document.getElementById('filter-leaf-arrangement').addEventListener('change', applyFilters);
+            document.getElementById('filter-plant-type').addEventListener('change', applyFilters);
+            document.getElementById('filter-status').addEventListener('change', applyFilters);
+
+            // Close modal when clicking outside
+            window.addEventListener('click', function (event) {
+                const modal = document.getElementById('plant-modal');
+                const imageModal = document.getElementById('image-modal');
+                if (event.target === modal) {
+                    closeModal();
+                }
+                if (event.target === imageModal) {
+                    closeImageModal();
+                }
+            });
+        }
+
+        // Render plant list
+        function renderList() {
+            const grid = document.getElementById('plants-grid');
+            grid.innerHTML = '';
+
+            filteredData.forEach((plant, index) => {
+                const card = createPlantCard(plant, index);
+                grid.appendChild(card);
+            });
+
+            updateResultsCount();
+        }
+
+        // Create plant card
+        function createPlantCard(plant, index) {
+            const card = document.createElement('div');
+            card.className = 'plant-card';
+            card.onclick = () => showPlantDetail(plant);
+
+            card.innerHTML = `
+                <h3>${plant.พันธุ์}</h3>
+                <div class="scientific-name">${plant.ชื่อวิทยาศาสตร์}</div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">พันธุ์ไม้:</span>
+                        <span class="info-value">${plant.พันธุ์ไม้}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">วิสัย:</span>
+                        <span class="info-value">${plant.วิสัย}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">ชนิดใบ:</span>
+                        <span class="info-value">${plant.ชนิดใบ}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">สถานะ:</span>
+                        <span class="info-value">${plant.สถานะ}</span>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Show plant detail modal
+        function showPlantDetail(plant) {
+            const modal = document.getElementById('plant-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+
+            modalTitle.textContent = plant.พันธุ์;
+
+            const detailFields = [
+                { label: 'ชื่อวิทยาศาสตร์', value: plant.ชื่อวิทยาศาสตร์ },
+                { label: 'พันธุ์ไม้', value: plant.พันธุ์ไม้ },
+                { label: 'วิสัย', value: plant.วิสัย },
+                { label: 'ใบ', value: plant.ใบ },
+                { label: 'ชนิดใบ', value: plant.ชนิดใบ },
+                { label: 'การเรียงตัวของใบ', value: plant.การเรียงตัวของใบ },
+                { label: 'ราก', value: plant.ราก },
+                { label: 'สถานะ', value: plant.สถานะ }
+            ];
+
+            const detailGrid = detailFields.map(field => `
+                <div class="detail-item">
+                    <div class="detail-label">${field.label}</div>
+                    <div class="detail-value">${field.value}</div>
+                </div>
+            `).join('');
+
+            const images = [
+                { label: 'ลำต้น', url: plant.ภาพลำต้น },
+                { label: 'ใบ', url: plant.ภาพใบ },
+                { label: 'ดอก', url: plant.ภาพดอก },
+                { label: 'ผล', url: plant.ภาพผล }
+            ];
+
+            const imageGallery = images.map(img => {
+                if (img.url && img.url.trim() !== '') {
+                    return `
+                        <div class="image-item">
+                            <img src="${img.url}" alt="${img.label}" onclick="showImageModal('${img.url}', '${plant.พันธุ์} - ${img.label}')">
+                            <div class="image-label">${img.label}</div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="image-item">
+                            <div class="image-placeholder">ไม่มีภาพ</div>
+                            <div class="image-label">${img.label}</div>
+                        </div>
+                    `;
+                }
+            }).join('');
+
+            modalBody.innerHTML = `
+                <div class="detail-grid">
+                    ${detailGrid}
+                </div>
+                <h3 style="margin-top: 20px; margin-bottom: 15px; color: #2d3748;">แกลเลอรีภาพ</h3>
+                <div class="image-gallery">
+                    ${imageGallery}
+                </div>
+            `;
+
+            modal.style.display = 'block';
+        }
+
+        // Show image modal
+        function showImageModal(imageUrl, title) {
+            const modal = document.getElementById('image-modal');
+            const modalTitle = document.getElementById('image-modal-title');
+            const modalImg = document.getElementById('image-modal-img');
+
+            modalTitle.textContent = title;
+            modalImg.src = imageUrl;
+            modal.style.display = 'block';
+        }
+
+        // Close modals
+        function closeModal() {
+            document.getElementById('plant-modal').style.display = 'none';
+        }
+
+        function closeImageModal() {
+            document.getElementById('image-modal').style.display = 'none';
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const searchName = document.getElementById('search-name').value.toLowerCase();
+            const habitat = document.getElementById('filter-habitat').value;
+            const leafType = document.getElementById('filter-leaf-type').value;
+            const leafArrangement = document.getElementById('filter-leaf-arrangement').value;
+            const plantType = document.getElementById('filter-plant-type').value;
+            const status = document.getElementById('filter-status').value;
+
+            filteredData = DATA.filter(plant => {
+                const matchesSearch = !searchName ||
+                    plant.พันธุ์.toLowerCase().includes(searchName) ||
+                    plant.ชื่อวิทยาศาสตร์.toLowerCase().includes(searchName);
+
+                const matchesHabitat = !habitat || plant.วิสัย === habitat;
+                const matchesLeafType = !leafType || plant.ชนิดใบ === leafType;
+                const matchesLeafArrangement = !leafArrangement || plant.การเรียงตัวของใบ === leafArrangement;
+                const matchesPlantType = !plantType || plant.พันธุ์ไม้ === plantType;
+                const matchesStatus = !status || plant.สถานะ === status;
+
+                return matchesSearch && matchesHabitat && matchesLeafType &&
+                    matchesLeafArrangement && matchesPlantType && matchesStatus;
+            });
+
+            renderList();
+        }
+
+        // Clear filters
+        function clearFilters() {
+            document.getElementById('search-name').value = '';
+            document.getElementById('filter-habitat').value = '';
+            document.getElementById('filter-leaf-type').value = '';
+            document.getElementById('filter-leaf-arrangement').value = '';
+            document.getElementById('filter-plant-type').value = '';
+            document.getElementById('filter-status').value = '';
+
+            filteredData = [...DATA];
+            renderList();
+        }
+
+        // Update results count
+        function updateResultsCount() {
+            document.getElementById('results-count').textContent = `ผลลัพธ์: ${filteredData.length} รายการ`;
+        }
+
+        // Show mode
+        function showMode(mode) {
+            currentMode = mode;
+
+            // Update nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Show/hide sections
+            if (mode === 'learning') {
+                document.getElementById('learning-mode').classList.remove('hidden');
+                document.getElementById('quiz-mode').classList.add('hidden');
+                renderList();
+            } else {
+                document.getElementById('learning-mode').classList.add('hidden');
+                document.getElementById('quiz-mode').classList.remove('hidden');
+                resetQuiz();
+            }
+        }
+
+        // Quiz functions
+        function startQuiz(category) {
+            const validData = DATA.filter(plant => hasRequiredImages(plant, category));
+
+            if (validData.length < 4) {
+                alert('ข้อมูลไม่เพียงพอสำหรับการสร้างคำถาม');
+                return;
+            }
+
+            const questions = generateQuestions(validData, category);
+
+            currentQuiz = {
+                category: category,
+                questions: questions,
+                currentQuestion: 0,
+                score: 0,
+                results: []
+            };
+
+            document.getElementById('quiz-setup').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+
+            showQuestion();
+        }
+
+        function hasRequiredImages(plant, category) {
+            // Check if plant has required images for the category
+            const imageFields = ['ภาพลำต้น', 'ภาพใบ', 'ภาพดอก', 'ภาพผล'];
+            return imageFields.some(field => plant[field] && plant[field].trim() !== '');
+        }
+
+        function generateQuestions(validData, category) {
+            const shuffledData = shuffle([...validData]);
+            const questionCount = Math.min(QUIZ_CONFIG.maxQuestions, shuffledData.length);
+
+            return shuffledData.slice(0, questionCount).map(plant => {
+                const questionData = createQuestion(plant, category, validData);
+                return questionData;
+            });
+        }
+
+        function createQuestion(correctPlant, category, allData) {
+            const categoryMap = {
+                'plant-name': { field: 'พันธุ์', text: 'ต้นไม้นี้ชื่ออะไร?', images: ['ภาพลำต้น', 'ภาพใบ', 'ภาพดอก', 'ภาพผล'] },
+                'habitat': { field: 'วิสัย', text: 'วิสัยของพรรณไม้นี้คือ?', images: ['ภาพลำต้น', 'ภาพใบ'] },
+                'leaf-type': { field: 'ชนิดใบ', text: 'ชนิดใบของพรรณไม้นี้คือ?', images: ['ภาพใบ'] },
+                'leaf-arrangement': { field: 'การเรียงตัวของใบ', text: 'การเรียงตัวของใบของพรรณไม้นี้คือ?', images: ['ภาพใบ'] },
+                'plant-type': { field: 'พันธุ์ไม้', text: 'พันธุ์ไม้นี้คือ?', images: ['ภาพลำต้น', 'ภาพดอก', 'ภาพผล'] }
+            };
+
+            const config = categoryMap[category];
+            const correctAnswer = correctPlant[config.field];
+
+            // Get available image
+            let questionImage = null;
+            for (let imageField of config.images) {
+                if (correctPlant[imageField] && correctPlant[imageField].trim() !== '') {
+                    questionImage = correctPlant[imageField];
+                    break;
+                }
+            }
+
+            // Generate wrong options
+            const wrongOptions = allData
+                .filter(plant => plant[config.field] !== correctAnswer)
+                .map(plant => plant[config.field]);
+
+            const uniqueWrongOptions = [...new Set(wrongOptions)];
+            const selectedWrongOptions = shuffle(uniqueWrongOptions).slice(0, 3);
+
+            const options = shuffle([correctAnswer, ...selectedWrongOptions]);
+
+            return {
+                plant: correctPlant,
+                questionText: config.text,
+                image: questionImage,
+                correctAnswer: correctAnswer,
+                options: options,
+                field: config.field
+            };
+        }
+
+        function showQuestion() {
+            if (currentQuiz.currentQuestion >= currentQuiz.questions.length) {
+                endQuiz();
+                return;
+            }
+
+            const question = currentQuiz.questions[currentQuiz.currentQuestion];
+            const questionNumber = currentQuiz.currentQuestion + 1;
+            const totalQuestions = currentQuiz.questions.length;
+
+            // Update progress
+            document.getElementById('question-counter').textContent = `คำถามที่ ${questionNumber}/${totalQuestions}`;
+            document.getElementById('progress-fill').style.width = `${(questionNumber / totalQuestions) * 100}%`;
+
+            // Show question
+            document.getElementById('question-text').textContent = question.questionText;
+
+            // Show image
+            const questionImageDiv = document.getElementById('question-image');
+            if (question.image) {
+                questionImageDiv.innerHTML = `<img src="${question.image}" alt="คำถาม" onclick="showImageModal('${question.image}', 'คำถามที่ ${questionNumber}')">`;
+            } else {
+                questionImageDiv.innerHTML = '<div class="image-placeholder">ไม่มีภาพประกอบ</div>';
+            }
+
+            // Show options
+            const optionsGrid = document.getElementById('options-grid');
+            optionsGrid.innerHTML = '';
+
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.textContent = option;
+                button.onclick = () => selectAnswer(option);
+                optionsGrid.appendChild(button);
+            });
+
+            // Start timer
+            startQuestionTimer();
+        }
+
+        function startQuestionTimer() {
+            let timeLeft = QUIZ_CONFIG.timePerQuestion;
+            document.getElementById('timer').textContent = timeLeft;
+
+            quizTimer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(quizTimer);
+                    selectAnswer(null); // No answer selected
+                }
+            }, 1000);
+        }
+
+        function selectAnswer(selectedAnswer) {
+            clearInterval(quizTimer);
+
+            const question = currentQuiz.questions[currentQuiz.currentQuestion];
+            const isCorrect = selectedAnswer === question.correctAnswer;
+
+            if (isCorrect) {
+                currentQuiz.score++;
+            }
+
+            // Store result
+            currentQuiz.results.push({
+                question: question,
+                selectedAnswer: selectedAnswer,
+                isCorrect: isCorrect
+            });
+
+            // Show correct/incorrect styling
+            const optionBtns = document.querySelectorAll('.option-btn');
+            optionBtns.forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent === question.correctAnswer) {
+                    btn.classList.add('correct');
+                } else if (btn.textContent === selectedAnswer && !isCorrect) {
+                    btn.classList.add('incorrect');
+                }
+                if (btn.textContent === selectedAnswer) {
+                    btn.classList.add('selected');
+                }
+            });
+
+            // Wait before next question
+            setTimeout(() => {
+                currentQuiz.currentQuestion++;
+                showQuestion();
+            }, QUIZ_CONFIG.waitTimeAfterAnswer * 1000);
+        }
+
+        function endQuiz() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('quiz-results').classList.remove('hidden');
+
+            // Show final score
+            const totalQuestions = currentQuiz.questions.length;
+            document.getElementById('final-score').textContent = `คะแนน: ${currentQuiz.score}/${totalQuestions}`;
+
+            // Show detailed results
+            const resultsGrid = document.getElementById('results-grid');
+            resultsGrid.innerHTML = '';
+
+            currentQuiz.results.forEach((result, index) => {
+                const resultCard = createResultCard(result, index + 1);
+                resultsGrid.appendChild(resultCard);
+            });
+        }
+
+        function createResultCard(result, questionNumber) {
+            const card = document.createElement('div');
+            card.className = `result-card ${result.isCorrect ? 'correct' : 'incorrect'}`;
+
+            const imageHtml = result.question.image
+                ? `<img src="${result.question.image}" alt="คำถาม ${questionNumber}">`
+                : '<div class="image-placeholder">ไม่มีภาพ</div>';
+
+            card.innerHTML = `
+                <div class="result-image">
+                    ${imageHtml}
+                </div>
+                <div class="result-info">
+                    <div class="result-question">คำถามที่ ${questionNumber}: ${result.question.questionText}</div>
+                    <div class="result-answers">
+                        <div class="your-answer">คำตอบของคุณ: ${result.selectedAnswer || 'ไม่ได้ตอบ'}</div>
+                        <div class="correct-answer">คำตอบที่ถูกต้อง: ${result.question.correctAnswer}</div>
+                    </div>
+                </div>
+                <div class="result-status ${result.isCorrect ? 'correct' : 'incorrect'}">
+                    ${result.isCorrect ? '✓ ถูกต้อง' : '✗ ผิด'}
+                </div>
+            `;
+
+            return card;
+        }
+
+        function resetQuiz() {
+            currentQuiz = null;
+            document.getElementById('quiz-setup').classList.remove('hidden');
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('quiz-results').classList.add('hidden');
+
+            if (quizTimer) {
+                clearInterval(quizTimer);
+                quizTimer = null;
+            }
+        }
+
+        // Utility functions
+        function shuffle(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+
+</html>
