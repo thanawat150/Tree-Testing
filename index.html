@@ -811,6 +811,7 @@
                     <h3>${plant.พันธุ์}</h3>
                     <div class="scientific-name">${plant.ชื่อวิทยาศาสตร์}</div>
                     <div class="plant-info">
+                        <div><strong>วงศ์:</strong> ${plant.วงศ์}</div>
                         <div><strong>พันธุ์ไม้:</strong> ${plant.พันธุ์ไม้}</div>
                         <div><strong>วิสัย:</strong> ${plant.วิสัย}</div>
                         <div><strong>ชนิดใบ:</strong> ${plant.ชนิดใบ}</div>
@@ -836,6 +837,10 @@
 
       const details = document.getElementById('modal-details');
       details.innerHTML = `
+                <div class="detail-item">
+                    <strong>วงศ์</strong>
+                    <span>${plant.วงศ์}</span>
+                </div>
                 <div class="detail-item">
                     <strong>พันธุ์ไม้</strong>
                     <span>${plant.พันธุ์ไม้}</span>
