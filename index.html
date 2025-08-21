@@ -31,6 +31,12 @@
             <input type="text" id="search-name" placeholder="ค้นหาชื่อพันธุ์...">
           </div>
           <div class="filter-group">
+            <label>วงศ์</label>
+            <select id="filter-plant">
+              <option value="">ทั้งหมด</option>
+            </select>
+          </div>
+          <div class="filter-group">
             <label>วิสัย</label>
             <select id="filter-habit">
               <option value="">ทั้งหมด</option>
@@ -168,6 +174,7 @@
 
     // Learning Mode Functions
     function initializeFilters() {
+      const plant = [...new Set(plantsData.map(p => p.วงศ์))];
       const habits = [...new Set(plantsData.map(p => p.วิสัย))];
       const leafTypes = [...new Set(plantsData.map(p => p.ชนิดใบ))];
       const leafArrangements = [...new Set(plantsData.map(p => p.การเรียงตัวของใบ))];
@@ -175,6 +182,7 @@
       const statuses = [...new Set(plantsData.map(p => p.สถานะ))];
 
       populateSelect('filter-habit', habits);
+      populateSelect('filter-plant', plant);
       populateSelect('filter-leaf-type', leafTypes);
       populateSelect('filter-leaf-arrangement', leafArrangements);
       populateSelect('filter-plant-type', plantTypes);
@@ -182,6 +190,7 @@
 
       // Add event listeners
       document.getElementById('search-name').addEventListener('input', filterPlants);
+      document.getElementById('filter-plant').addEventListener('change', filterPlants);
       document.getElementById('filter-habit').addEventListener('change', filterPlants);
       document.getElementById('filter-leaf-type').addEventListener('change', filterPlants);
       document.getElementById('filter-leaf-arrangement').addEventListener('change', filterPlants);
@@ -201,6 +210,7 @@
 
     function filterPlants() {
       const searchName = document.getElementById('search-name').value.toLowerCase();
+      const filterplant = document.getElementById('filter-plant').value;
       const filterHabit = document.getElementById('filter-habit').value;
       const filterLeafType = document.getElementById('filter-leaf-type').value;
       const filterLeafArrangement = document.getElementById('filter-leaf-arrangement').value;
@@ -210,6 +220,7 @@
       filteredPlants = plantsData.filter(plant => {
         return (!searchName || plant.พันธุ์.toLowerCase().includes(searchName) ||
           plant.ชื่อวิทยาศาสตร์.toLowerCase().includes(searchName)) &&
+          (!filterplant || plant.วงศ์ === filterplant) &&
           (!filterHabit || plant.วิสัย === filterHabit) &&
           (!filterLeafType || plant.ชนิดใบ === filterLeafType) &&
           (!filterLeafArrangement || plant.การเรียงตัวของใบ === filterLeafArrangement) &&
@@ -223,6 +234,7 @@
 
     function clearFilters() {
       document.getElementById('search-name').value = '';
+      document.getElementById('filter-plant').value = '';
       document.getElementById('filter-habit').value = '';
       document.getElementById('filter-leaf-type').value = '';
       document.getElementById('filter-leaf-arrangement').value = '';
